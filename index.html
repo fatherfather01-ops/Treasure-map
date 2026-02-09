@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Карта сокровищ</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Marck+Script&display=swap');
+
+body {
+    margin: 0;
+    background: #cfc2a2;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Marck Script', cursive;
+}
+
+/* ПЕРГАМЕНТ */
+.sheet {
+    width: 900px;
+    max-width: 95%;
+    background: #f6ecd1;
+    padding: 50px;
+    box-shadow:
+        0 0 40px rgba(0,0,0,.4),
+        inset 0 0 60px rgba(0,0,0,.1);
+    border: 6px solid #3b2a1a;
+}
+
+/* ЗАГОЛОВОК */
+.title {
+    text-align: center;
+    font-size: 48px;
+    margin-bottom: 40px;
+    color: #2a1c12;
+}
+
+/* КАРТА */
+.map {
+    position: relative;
+    height: 500px;
+    border: 3px solid #3b2a1a;
+}
+
+/* КАМНИ */
+.gem {
+    position: absolute;
+    width: 34px;
+    height: 34px;
+    transform: rotate(45deg);
+    border: 3px solid #2a1c12;
+    box-shadow: inset 0 0 6px rgba(255,255,255,.6);
+}
+
+/* ЦВЕТА КАМНЕЙ */
+.gray   { background: #9e9e9e; }
+.white  { background: #f5f5f5; }
+.orange { background: #e59a3a; }
+.red    { background: #b63a2e; }
+
+/* ВОПРОС */
+.question {
+    position: absolute;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 3px solid #2a1c12;
+    background: #fff7e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: bold;
+    color: #2a1c12;
+}
+
+/* ПОДПИСИ */
+.label {
+    position: absolute;
+    font-size: 22px;
+    color: #2a1c12;
+    white-space: nowrap;
+}
+
+/* РАСПОЛОЖЕНИЕ */
+/* Прихожая — центр */
+#p1 { top: 400px; left: 422px; }
+#l1 { top: 360px; left: 315px; }
+
+/* Кухня — снизу слева */
+#p2 { top: 280px; left: 232px; }
+#l2 { top: 280px; left: 50px; }
+
+/* Ванная — сверху */
+#p3 { top: 90px; left: 422px; }
+#l3 { top: 40px; left: 360px; }
+
+/* Гостиная — справа */
+#p4 { top: 231px; left: 620px; }
+#l4 { top: 190px; left: 520px; }
+
+/* Спальня — тайна */
+#p5 { top: 90px; left: 180px; }
+#l5 { top: 40px; left: 90px; }
+
+/* ЛИНИИ */
+.line {
+    position: absolute;
+    border-top: 3px dashed #2a1c12;
+}
+
+#line1 { top: 250px; left: 444px; width: 183px; }
+#line2 { top: 250px; left: 253px; width: 185px; }
+#line3 {
+    top: 130px;
+    left: 440px;
+    height: 114px;
+    border-left: 3px dashed #2a1c12;
+}
+#line4 {
+    top: 250px;
+    left: 250px;
+    height: 50px;
+    border-left: 3px dashed #2a1c12;
+}
+
+#line5 {
+    top: 250px;
+    left: 440px;
+    height: 140px;
+    border-left: 3px dashed #2a1c12;
+}
+
+
+/* ПОДСКАЗКА */
+.clue {
+    margin-top: 40px;
+    font-size: 26px;
+    border-top: 2px solid #2a1c12;
+    padding-top: 20px;
+    color: #2a1c12;
+}
+
+button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-family: inherit;
+    font-size: 22px;
+    background: none;
+    border: 2px solid #2a1c12;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="sheet">
+
+<div class="title">Карта сокровищ</div>
+
+<div class="map">
+
+<!-- ЛИНИИ -->
+<div class="line" id="line1"></div>
+<div class="line" id="line2"></div>
+<div class="line" id="line3"></div>
+<div class="line" id="line4"></div>
+<div class="line" id="line5"></div>
+
+<!-- КАМНИ -->
+<div class="gem gray"   id="p1"></div>
+<div class="label" id="l1">✦ Прихожая — Врата Дома</div>
+
+<div class="gem white"  id="p2"></div>
+<div class="label" id="l2">✦ Кухня — Бухта Пряностей</div>
+
+<div class="gem orange" id="p3"></div>
+<div class="label" id="l3">✦ Ванная — Озеро Туманов</div>
+
+<div class="gem red"    id="p4"></div>
+<div class="label" id="l4">✦ Гостиная — Зал Объятий</div>
+
+<!-- ФИНАЛ -->
+<div class="question" id="p5">?</div>
+<div class="label" id="l5">✦ Спальня — Тайна</div>
+
+</div>
+
+<div class="clue" id="clue">
+Врата Дома. Серый камень укажет начало пути.
+</div>
+
+<button onclick="next()">Следующая подсказка</button>
+
+</div>
+
+<script>
+const clues = [
+"Врата Дома. Серый камень укажет начало пути.",
+"Бухта Пряностей. Белый камень ждёт там, где тепло.",
+"Озеро Туманов. Оранжевый камень не боится воды.",
+"Зал Объятий. Красный камень хранит сердце дома.",
+"Тайна раскрывается там, где заканчивается путь."
+];
+
+let i = 0;
+const clueBox = document.getElementById("clue");
+
+function next() {
+    if (i < clues.length - 1) {
+        i++;
+        clueBox.textContent = clues[i];
+    }
+}
+</script>
+
+</body>
+</html>
